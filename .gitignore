@@ -1,0 +1,26 @@
+# ===== 原始大文件（超过 GitHub 单文件 100MB 限制，需自行下载放入 data）=====
+data/2019.csv
+data/2019-Nov.csv
+
+# ===== 压缩包（本地交付用，不上传）=====
+*.zip
+
+# ===== 虚拟环境（体积大、可重建）=====
+.venv/
+venv/
+env/
+
+# ===== Python 缓存与编译文件 =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ===== IDE / 编辑器配置 =====
+.idea/
+.vscode/
+*.swp
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
