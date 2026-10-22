@@ -25,6 +25,17 @@
 - **技术价值**：构建了 **MySQL 与 Python 双工具交叉验证**的完整分析流程，保证指标口径统一、结果严谨可信；
 - **工程价值**：形成从原始数据到静态图表、分析报告、Power BI 交互式看板的**完整可复现分析链路**，可作为数据分析项目的标准化范例。
 
+### 1.4 数据来源
+
+本项目使用的数据集来自 **Kaggle**，为公开的真实电商行为日志：
+
+- **数据集名称**：[eCommerce Events History in Cosmetics Shop](https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-cosmetics-shop)
+- **数据作者**：Michael Kechinov（数据由 [Open CDP](https://github.com/open-cdp) 项目收集）
+- **数据说明**：该数据集记录了某中型化妆品在线商店 2019 年 10 月—2020 年 2 月（共 5 个月）的用户行为，每行代表一次用户事件（浏览、加购、移除购物车、购买）。**本项目选取其中 2019 年 11 月（共 30 天）的数据**开展分析。
+- **许可证（License）**：Data files © Original Authors（数据版权归原作者所有），本项目仅用于学习与研究。
+
+> 在此向数据集的原作者及 Kaggle 平台致谢。
+
 ---
 
 ## 二、技术栈
