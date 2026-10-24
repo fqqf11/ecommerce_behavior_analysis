@@ -1,6 +1,12 @@
-# ===== 原始大文件（超过 GitHub 单文件 100MB 限制，需自行下载放入 data）=====
-data/2019.csv
-data/2019-Nov.csv
+# ===== 数据目录（体积过大，需从 Kaggle 自行下载）=====
+data/
+datas/
+out_data/
+2019-Oct.csv
+2019-Nov.csv
+2019-Dec.csv
+2020-Jan.csv
+2020-Feb.csv
 
 # ===== 压缩包（本地交付用，不上传）=====
 *.zip

@@ -115,41 +115,46 @@ SELECT
 FROM user_behavior_tag;
 /* =============================================
    模块3：分品类购买转化率
-   功能：各品类下，浏览过该品类的用户的购买转化率
+   功能：各品类下，购买独立用户数 ÷ 浏览独立用户数
+   口径说明：与「整体转化率（购买UV / 浏览UV）」保持同一宽松口径，
+     结果可与 output/data/category_conv.csv 直接对账
+     （已核验：头部品类 2007399943458784057 = 1925 / 954 = 49.56%，与 CSV 一致）。
+     注：因存在"未浏览该品类却直接购买"的用户，该比率理论上可能 >100%；
+     本数据实测最高 49.56%，未越界，故无需收紧口径。
    ============================================= */
 SELECT
     category_id,
-    -- 分母：该品类的浏览独立用户数
-    COUNT(DISTINCT CASE WHEN event_type = 'view' THEN user_id END) AS cat_view_uv,
-    -- 分子：该品类的购买独立用户数
+    COUNT(DISTINCT CASE WHEN event_type = 'view'     THEN user_id END) AS cat_view_uv,
     COUNT(DISTINCT CASE WHEN event_type = 'purchase' THEN user_id END) AS cat_buy_uv,
-    -- 计算转化率，分母为0时返回0，避免空值（对齐Python fillna(0)逻辑）
     ROUND(
-    IFNULL(
         COUNT(DISTINCT CASE WHEN event_type = 'purchase' THEN user_id END)
         / NULLIF(COUNT(DISTINCT CASE WHEN event_type = 'view' THEN user_id END), 0),
-        0
-    ),
-    6
-) AS convert_rate
+        6
+    ) AS convert_rate
 FROM clean_data
 GROUP BY category_id
-ORDER BY convert_rate DESC, cat_view_uv DESC
+HAVING cat_view_uv > 0                 -- 只保留有浏览的品类
+ORDER BY convert_rate DESC, cat_view_uv DESC;
 /* =============================================
    3.2：零转化品类统计
-   功能：统计有浏览但无购买的品类占比，定位长尾优化空间
+   功能：统计"有浏览但无购买"的品类占比，定位长尾优化空间
+   口径说明（已修正）：原写法统计了全部品类（含零浏览品类），与注释"有浏览的总品类数"不符；
+     现改为只统计「至少 1 人浏览过」的品类，购买数沿用与模块3 相同的宽松口径。
    ============================================= */
-SELECT
-    COUNT(*) AS total_category,          -- 有浏览的总品类数
-    SUM(CASE WHEN cat_buy_uv = 0 THEN 1 ELSE 0 END) AS zero_convert_cat,  -- 零转化品类数
-    ROUND(SUM(CASE WHEN cat_buy_uv = 0 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS zero_convert_rate  -- 零转化品类占比
-FROM (
+WITH cat_agg AS (
     SELECT
         category_id,
+        COUNT(DISTINCT CASE WHEN event_type = 'view'     THEN user_id END) AS cat_view_uv,
         COUNT(DISTINCT CASE WHEN event_type = 'purchase' THEN user_id END) AS cat_buy_uv
     FROM clean_data
     GROUP BY category_id
-) t;
+)
+SELECT
+    COUNT(*) AS total_category,                                              -- 有浏览的总品类数
+    SUM(CASE WHEN cat_buy_uv = 0 THEN 1 ELSE 0 END) AS zero_convert_cat,     -- 零转化品类数
+    ROUND(SUM(CASE WHEN cat_buy_uv = 0 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS zero_convert_rate
+FROM cat_agg
+WHERE cat_view_uv > 0;
 
 /* =============================================
    模块4：TOP10 商品统计

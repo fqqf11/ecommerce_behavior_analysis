@@ -2,6 +2,7 @@ pandas
 numpy
 matplotlib
 seaborn
-pytz
+plotly
 mlxtend
 pymysql
+pytz
